@@ -832,7 +832,7 @@ const DAYS=[
  {t:'19:00–19:30',p:'🌆 蓝调时刻 · 微缩房子+电视机',loc:'harbour',route:'在同一段长廊，往中环码头方向找机位'},
  {t:'19:40',p:'回旺角',loc:'hotel',route:'东铁线 金钟→旺角东站（约12分钟）'},
  {t:'20:00–21:00',p:'晚餐 · 旺角（近酒店）',loc:'',route:'旺角茶餐厅/小食，饭后步行5-10分钟回酒店'},
- {t:'21:10',p:'回酒店休息',loc:'hotel',route:''}
+ {t:'21:10',p:'回酒店休息',loc:'hotel',route:'晚餐就在旺角，饭后步行5-10分钟回酒店'}
 ]},
 {label:'D2 · 8/7周五',sub:'拜仁球赛日 · 启德体育场20:00',summary:'深水埗→油麻地→尖沙咀→启德体育场（20:00开赛，19:15前到场）',items:[
  {t:'09:30',p:'深水埗 · 逛鸭寮街/南昌街',loc:'yashu',route:'旺角站→荃湾线1站到深水埗站'},
@@ -859,7 +859,7 @@ const DAYS=[
  {t:'17:00',p:'龙丰 · 药妆补货',loc:'longfung',route:'旺角站E2出口旁（西洋菜南街远景大厦）'},
  {t:'17:45',p:'朗豪坊 · Log-On（7/F）',loc:'logon',route:'步行约5分钟'},
  {t:'19:00–20:00',p:'晚餐 · 旺角',loc:'',route:'备选：女人街小食、煲仔饭、油渣面'},
- {t:'20:30',p:'回酒店',loc:'hotel',route:''}
+ {t:'20:30',p:'回酒店',loc:'hotel',route:'晚餐就在旺角，饭后步行5-10分钟回酒店'}
 ]},
 {label:'D4 · 8/9周日',sub:'收尾 + 去澳门',summary:'退房→早茶→MOKO手信→港澳快线/船去澳门',items:[
  {t:'08:30',p:'退房 · 行李寄存前台',loc:'hotel',route:''},
@@ -872,12 +872,13 @@ const DAYS=[
 ];
 /* ============ 状态与工具 ============ */
 const LS_KEY='hktrip_locs_v2';
-let locations=[],map=null,markers={},curDay=0,curMapDay=-1,activeCat='全部',polylines=[];
+let locations=[],map=null,markers={},curDay=0,curMapDay=-1,activeCat='全部',polylines=[],dayNums=[];
 function loadState(){try{const r=localStorage.getItem(LS_KEY);if(r){locations=JSON.parse(r);return;}}catch(e){}locations=JSON.parse(JSON.stringify(defaultLocations));}
 function saveState(){localStorage.setItem(LS_KEY,JSON.stringify(locations));}
 function byId(id){return locations.find(l=>l.id===id);}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function uid(){return 'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function distKm(a,b){const R=6371;const dLat=(b.lat-a.lat)*Math.PI/180,dLon=(b.lng-a.lng)*Math.PI/180;const s=Math.sin(dLat/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.sqrt(s));}
 function openModal(el){el.classList.add('open');}
 function closeModal(el){el.classList.remove('open');}
 /* ============ 标签页 ============ */
@@ -901,15 +902,22 @@ function renderDayChips(){
 }
 function renderDay(){
   const d=DAYS[curDay];
+  let prev=null;
   let h='<div class="dayhead"><h2>'+d.label+' · '+d.sub+'</h2><div class="sub">路线：'+d.summary+'</div></div><div class="tl">';
   d.items.forEach(it=>{
     const l=it.loc?byId(it.loc):null;
+    let r=it.route||'';
+    if(l&&prev&&prev.id!==l.id&&!r){
+      const dkm=distKm(prev,l);
+      r=dkm<1.5?('步行约'+Math.round(dkm/4.5*60)+'分钟'):('港铁/巴士前往（预估'+(dkm<5?'5-12':'8-18')+'港币）');
+    }
+    if(l)prev=l;
     h+='<div class="tl-item"><div class="tl-time">'+esc(it.t)+'</div>'+
        '<div class="tl-body"'+(l?' onclick="openLoc(\''+l.id+'\')"':'')+'>'+
        '<div class="tt">'+esc(it.p)+'</div>'+
        (l?'<div class="loc">📍 '+esc(l.name)+'</div>':'')+
        '</div></div>';
-    if(it.route)h+='<div class="tl-route">'+esc(it.route)+'</div>';
+    if(r)h+='<div class="tl-route">'+esc(r)+'</div>';
   });
   h+='</div>';
   document.getElementById('dayBody').innerHTML=h;
@@ -923,7 +931,8 @@ function buildMarkers(){
     markers[l.id]=m;
   });
 }
-function clearPolylines(){polylines.forEach(p=>map.removeLayer(p));polylines=[];}
+function clearDayNums(){dayNums.forEach(m=>map.removeLayer(m));dayNums=[];}
+function clearPolylines(){polylines.forEach(p=>map.removeLayer(p));polylines=[];clearDayNums();}
 function renderMapDayChips(){
   const el=document.getElementById('mapDayChips');el.innerHTML='';
   ['全部','D1','D2','D3','D4'].forEach((t,i)=>{
@@ -937,9 +946,17 @@ function renderMapDayChips(){
 function mapSelectDay(){
   clearPolylines();
   if(curMapDay<0){map.fitBounds(L.latLngBounds(locations.map(l=>[l.lat,l.lng])),{padding:[30,30]});return;}
-  const pts=DAYS[curMapDay].items.filter(x=>x.loc&&byId(x.loc)).map(x=>[byId(x.loc).lat,byId(x.loc).lng]);
+  const stops=DAYS[curMapDay].items.filter(x=>x.loc&&byId(x.loc));
+  const pts=[],uniq=[];
+  stops.forEach(x=>{
+    const l=byId(x.loc),p=[l.lat,l.lng],last=pts[pts.length-1];
+    if(!last||last[0]!==p[0]||last[1]!==p[1]){pts.push(p);uniq.push(l);}
+  });
   if(!pts.length)return;
   polylines.push(L.polyline(pts,{color:'#b91c1c',weight:3,dashArray:'6 6'}).addTo(map));
+  uniq.forEach((l,i)=>{
+    dayNums.push(L.marker([l.lat,l.lng],{icon:L.divIcon({className:'',html:'<div style="width:22px;height:22px;border-radius:50%;background:#b91c1c;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.4)">'+(i+1)+'</div>',iconSize:[22,22],iconAnchor:[11,11]}),zIndexOffset:1000}).addTo(map));
+  });
   map.fitBounds(L.latLngBounds(pts),{padding:[30,30]});
 }
 
