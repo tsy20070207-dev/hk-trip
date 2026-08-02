@@ -702,8 +702,12 @@ svg.leaflet-image-layer.leaflet-interactive path {
   .tl-body .tt{font-size:14px;font-weight:600}
   .tl-body .loc{display:inline-block;margin-top:3px;background:#f3f4f6;border-radius:6px;padding:1px 7px;font-size:12px;color:#374151}
   .tl-body .loc b{color:var(--brand)}
-  .tl-route{font-size:11px;color:var(--muted);padding:2px 0 4px 98px;line-height:1.5}
-  .tl-route::before{content:'⇣ ';color:#9ca3af}
+  .tl-bridge{position:relative;padding:4px 0 4px 98px}
+  .tl-bridge::before{content:'';position:absolute;left:43px;top:0;bottom:0;width:2px;background:#d1d5db}
+  .tl-route{background:#f9fafb;border:1px dashed #cbd5e1;border-left:3px solid var(--brand);border-radius:8px;padding:7px 10px;font-size:12px;color:#374151;line-height:1.65;margin:2px 0}
+  .tl-route .ft{font-weight:700;color:var(--brand);margin-bottom:2px;font-size:12px}
+  .tl-route .ft .arr{color:#9ca3af;margin:0 5px;font-weight:400}
+  .tl-note{font-size:11px;color:var(--muted);padding:3px 0 3px 98px}
   .loc-line{display:flex;gap:10px;align-items:center;padding:9px 4px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px}
   .loc-line:hover{background:#f9fafb}
   .dot{flex:0 0 10px;height:10px;border-radius:50%}
@@ -798,22 +802,22 @@ svg.leaflet-image-layer.leaflet-interactive path {
 /* ============ 地点数据（含避雷 warn）============ */
 const CAT_COLORS={酒店:'#b91c1c',景点:'#2563eb',美食:'#d97706',购物:'#16a34a',拍照:'#7c3aed',交通:'#64748b'};
 const defaultLocations=[
-{id:'hotel',name:'九龙维景酒店',cat:'酒店',lat:22.3195,lng:114.17578,address:'九龙窝打老道75号',hours:'入住15:00后可入房，可先寄存行李',mtr:'旺角东站(东铁线)步行8分 / 旺角站(荃湾线)步行10分',best:'—',warn:'房间一般15:00后才有，早到先寄存行李去逛。',notes:'全程大本营。去机场/去澳门都从这里出发。',cash:false,book:false,opt:false},
+{id:'hotel',name:'九龙维景酒店',cat:'酒店',lat:22.3195,lng:114.17578,address:'九龙窝打老道75号',hours:'入住15:00后可入房，可先寄存行李',mtr:'旺角站E2出口（九龙维景酒店方向）步行约8分钟；或旺角东站(东铁线)',best:'—',warn:'房间一般15:00后才有，早到先寄存行李去逛。',notes:'全程大本营。去机场/去澳门都从这里出发。',cash:false,book:false,opt:false},
 {id:'airport',name:'香港国际机场',cat:'交通',lat:22.3089,lng:113.9185,address:'大屿山赤鱲角',hours:'—',mtr:'机场快线(24分到九龙) / 城巴A21(约33港币)',best:'—',warn:'过关+取行李预留40-60分钟；A21机场巴士在抵港层地面找站牌。',notes:'去市区省钱选城巴A21（约33港币，40-60分钟直达旺角）。',cash:false,book:false,opt:false},
 {id:'harbour',name:'维港·微缩房子+电视机（中西区海滨长廊）',cat:'拍照',lat:22.2832,lng:114.166,address:'中西区海滨长廊（金钟段）',hours:'户外24小时（免费）',mtr:'金钟站A出口→扶手梯上到海滨长廊',best:'蓝调 19:00-19:30（8月日落约19:00）',warn:'傍晚人多早占位；海边风大带薄外套；微缩房子分散在围栏上，先走一圈找齐再拍。',notes:'微缩海景房+迷你电视机镶嵌在围栏上，正对维港天际线。',cash:false,book:false,opt:false},
 {id:'wts',name:'黄大仙祠（算命求签）',cat:'景点',lat:22.34282,lng:114.19364,address:'九龙黄大仙竹园村2号（啬色园）',hours:'07:00–17:30（免费）',mtr:'黄大仙站B2出口（观塘线）',best:'求签解签建议16:00前',warn:'17:30关闭、解签档约17:00收档；解签只收现金25-30港币；求签人多要排队。',notes:'求签、解签、求姻缘灵验。',cash:true,book:false,opt:false},
-{id:'ymtps',name:'油麻地警署',cat:'景点',lat:22.30953,lng:114.16854,address:'油麻地广东道627号',hours:'外观全天免费；「光影之旅」展览按预约场次',mtr:'油麻地站C出口步行5分',best:'下午光线好，展览约14:00-16:00场',warn:'「光影之旅」必须提前网上购票（可购30天内、每次最多4张、不设现场售票）；约不上就外观打卡。',notes:'还原《无间道》《英雄本色》等港片场景的沉浸展。',cash:false,book:true,opt:false},
-{id:'fai',name:'辉记车仔面',cat:'美食',lat:22.3073,lng:114.1702,address:'油麻地鸦打街33号雅达商业大厦（近庙街）',hours:'约11:00–22:00',mtr:'油麻地站步行6分',best:'午餐/下午茶',warn:'老字号环境朴素；配料按件计价先看价牌；午后不排队。',notes:'港式车仔面自选配料，价格亲民。',cash:false,book:false,opt:false},
-{id:'yashu',name:'雅俗共想（张国荣海报楼梯）',cat:'购物',lat:22.329,lng:114.1634,address:'深水埗南昌街124号',hours:'约12:00–20:00',mtr:'深水埗站A2出口步行8分（荃湾线）',best:'午后',warn:'约12:00才开门别去太早；部分展品不可拍摄；中古物件轻拿轻放。',notes:'二手中古店：复古公仔、绝版海报、旧杂志、张国荣纪念专刊（约200港币）。',cash:false,book:false,opt:false},
-{id:'jollibee',name:'Jollibee 快乐蜂',cat:'美食',lat:22.29953,lng:114.17371,address:'尖沙咀金马伦道49号',hours:'约07:00–23:00',mtr:'尖沙咀站B2出口步行3分',best:'晚餐（球赛前）',warn:'饭点人多排队；炸鸡现炸约等5-10分钟；球赛前18:30去刚好。',notes:'菲律宾国民炸鸡 Chickenjoy + 甜意面，平价。',cash:false,book:false,opt:false},
+{id:'ymtps',name:'油麻地警署',cat:'景点',lat:22.30953,lng:114.16854,address:'油麻地广东道627号',hours:'外观全天免费；「光影之旅」展览按预约场次',mtr:'油麻地站B2出口（庙街方向）步行约7分钟',best:'下午光线好，展览约14:00-16:00场',warn:'「光影之旅」必须提前网上购票（可购30天内、每次最多4张、不设现场售票）；约不上就外观打卡。',notes:'还原《无间道》《英雄本色》等港片场景的沉浸展。',cash:false,book:true,opt:false},
+{id:'fai',name:'辉记车仔面',cat:'美食',lat:22.3073,lng:114.1702,address:'油麻地鸦打街33号雅达商业大厦（近庙街）',hours:'约11:00–22:00',mtr:'油麻地站B2出口（文明里/鸦打街/庙街方向）',best:'午餐/下午茶',warn:'老字号环境朴素；配料按件计价先看价牌；午后不排队。',notes:'港式车仔面自选配料，价格亲民。',cash:false,book:false,opt:false},
+{id:'yashu',name:'雅俗共想（张国荣海报楼梯）',cat:'购物',lat:22.329,lng:114.1634,address:'深水埗南昌街124号',hours:'约12:00–20:00',mtr:'深水埗站A1出口（南昌街/鸭寮街方向）',best:'午后',warn:'约12:00才开门别去太早；部分展品不可拍摄；中古物件轻拿轻放。',notes:'二手中古店：复古公仔、绝版海报、旧杂志、张国荣纪念专刊（约200港币）。',cash:false,book:false,opt:false},
+{id:'jollibee',name:'Jollibee 快乐蜂',cat:'美食',lat:22.29953,lng:114.17371,address:'尖沙咀金马伦道49号',hours:'约07:00–23:00',mtr:'尖沙咀站（金马伦道方向出口）步行约5分钟',best:'晚餐（球赛前）',warn:'饭点人多排队；炸鸡现炸约等5-10分钟；球赛前18:30去刚好。',notes:'菲律宾国民炸鸡 Chickenjoy + 甜意面，平价。',cash:false,book:false,opt:false},
 {id:'bpm',name:'蝴蝶酥博物馆（曲奇四重奏）',cat:'美食',lat:22.2948,lng:114.1756,address:'尖沙咀近星光大道/K11 MUSEA一带（约9㎡小铺）',hours:'约10:00–21:00',mtr:'尖沙咀站/尖东站，近星光大道',best:'白天',warn:'2026年新开、铺位很小，出发前用Google Map搜「蝴蝶酥博物馆」确认；可能单行排队。',notes:'曲奇四重奏招牌蝴蝶酥，适合伴手礼，可打卡巨型蝴蝶酥。',cash:false,book:false,opt:false},
-{id:'jxtc',name:'锦绣唐朝（文创纪念品）',cat:'购物',lat:22.29694,lng:114.17186,address:'尖沙咀国际广场 iSQUARE（弥敦道63号）',hours:'约10:00–22:00',mtr:'尖沙咀站C1/C2出口直达',best:'白天',warn:'iSQUARE商场大，锦绣唐朝在商场内需看楼层指引；同栋MTR层还有龙丰分店。',notes:'香港文创手信：HONGKONG袋、毛绒玩具、丝巾、望远镜。',cash:false,book:false,opt:false},
-{id:'kp',name:'九龙公园',cat:'景点',lat:22.30053,lng:114.17012,address:'尖沙咀（海防道/弥敦道交界）',hours:'05:00–24:00（免费）',mtr:'尖沙咀站A1出口',best:'下午4-6点光线柔和',warn:'蚊虫多建议带驱蚊；火烈鸟湖在公园中部。',notes:'火烈鸟湖、雕塑径、鸟湖，散步透气。',cash:false,book:false,opt:false},
+{id:'jxtc',name:'锦绣唐朝（文创纪念品）',cat:'购物',lat:22.29694,lng:114.17186,address:'尖沙咀国际广场 iSQUARE（弥敦道63号）',hours:'约10:00–22:00',mtr:'尖沙咀站H/R出口直达国际广场iSQUARE',best:'白天',warn:'iSQUARE商场大，锦绣唐朝在商场内需看楼层指引；同栋MTR层还有龙丰分店。',notes:'香港文创手信：HONGKONG袋、毛绒玩具、丝巾、望远镜。',cash:false,book:false,opt:false},
+{id:'kp',name:'九龙公园',cat:'景点',lat:22.30053,lng:114.17012,address:'尖沙咀（海防道/弥敦道交界）',hours:'05:00–24:00（免费）',mtr:'尖沙咀站A1出口直达九龙公园',best:'下午4-6点光线柔和',warn:'蚊虫多建议带驱蚊；火烈鸟湖在公园中部。',notes:'火烈鸟湖、雕塑径、鸟湖，散步透气。',cash:false,book:false,opt:false},
 {id:'logon',name:'Log-On（生活杂货）',cat:'购物',lat:22.31825,lng:114.16861,address:'旺角朗豪坊7/F（亚皆老街8号）',hours:'约11:00–23:00',mtr:'旺角站C3出口直达朗豪坊',best:'傍晚',warn:'朗豪坊11:00才开门；周末人多；可八达通/支付宝付款。',notes:'City Super旗下：文具、相机相纸、潮玩、生活杂货。',cash:false,book:false,opt:false},
-{id:'longfung',name:'龙丰（药妆杂货）',cat:'购物',lat:22.3166,lng:114.17,address:'旺角西洋菜南街26-36号远景大厦地下',hours:'约10:00–22:00',mtr:'旺角站E2出口步行2分',best:'傍晚',warn:'10:00开门；同类商品先比价再买（药妆/日用品差价大）。',notes:'港人日常药妆/日用品/零食批发式小店。',cash:false,book:false,opt:false},
-{id:'petite',name:'Petite Petite（香港手信）',cat:'购物',lat:22.32318,lng:114.17229,address:'新世纪广场 MOKO（太子道西193号）',hours:'随商场约11:00–22:00',mtr:'旺角东站上盖（东铁线）',best:'白天',warn:'MOKO分店11:00开；铺位小，用Google Map搜「Petite Petite」确认。',notes:'护照夹、卡套、皮质小挂件、帆布袋等香港纪念品。',cash:false,book:false,opt:false},
-{id:'jke',name:'健康东街（北角海景街拍）',cat:'拍照',lat:22.29152,lng:114.20705,address:'北角健康东街（七姊妹道交界）',hours:'24小时（户外）',mtr:'北角站(港岛线) / 鲗鱼涌站C出口',best:'白天光线好',warn:'坡道车流多，拍照注意安全；靠海风大。',notes:'网红海景坡道机位：大海+双层巴士+邮轮。',cash:false,book:false,opt:false},
-{id:'danish',name:'丹麦饼店',cat:'美食',lat:22.27779,lng:114.1862,address:'铜锣湾礼顿道（利园山道一带）',hours:'约07:00–21:00',mtr:'铜锣湾站F出口步行6分（港岛线）',best:'早午间/下午茶',warn:'只收现金；老店排队；蛋挞/丹麦酥售完即止。',notes:'1971年开业老字号，蛋挞、丹麦酥、曲奇。',cash:true,book:false,opt:false},
+{id:'longfung',name:'龙丰（药妆杂货）',cat:'购物',lat:22.3166,lng:114.17,address:'旺角西洋菜南街26-36号远景大厦地下',hours:'约10:00–22:00',mtr:'旺角站E2出口（西洋菜南街方向）',best:'傍晚',warn:'10:00开门；同类商品先比价再买（药妆/日用品差价大）。',notes:'港人日常药妆/日用品/零食批发式小店。',cash:false,book:false,opt:false},
+{id:'petite',name:'Petite Petite（香港手信）',cat:'购物',lat:22.32318,lng:114.17229,address:'新世纪广场 MOKO（太子道西193号）',hours:'随商场约11:00–22:00',mtr:'旺角东站A出口直达新世纪广场MOKO',best:'白天',warn:'MOKO分店11:00开；铺位小，用Google Map搜「Petite Petite」确认。',notes:'护照夹、卡套、皮质小挂件、帆布袋等香港纪念品。',cash:false,book:false,opt:false},
+{id:'jke',name:'健康东街（北角海景街拍）',cat:'拍照',lat:22.29152,lng:114.20705,address:'北角健康东街（七姊妹道交界）',hours:'24小时（户外）',mtr:'北角站B2出口（七姊妹道方向）步行约6分钟',best:'白天光线好',warn:'坡道车流多，拍照注意安全；靠海风大。',notes:'网红海景坡道机位：大海+双层巴士+邮轮。',cash:false,book:false,opt:false},
+{id:'danish',name:'丹麦饼店',cat:'美食',lat:22.27779,lng:114.1862,address:'铜锣湾礼顿道（利园山道一带）',hours:'约07:00–21:00',mtr:'铜锣湾站A出口（时代广场/礼顿道方向）步行约7分钟',best:'早午间/下午茶',warn:'只收现金；老店排队；蛋挞/丹麦酥售完即止。',notes:'1971年开业老字号，蛋挞、丹麦酥、曲奇。',cash:true,book:false,opt:false},
 {id:'avenue',name:'星光大道（备选夜景）',cat:'拍照',lat:22.29415,lng:114.17579,address:'尖沙咀海滨长廊（梳士巴利道）',hours:'24小时（免费）',mtr:'尖东站J出口 / 尖沙咀站E出口',best:'傍晚→夜景（20:00幻彩咏香江）',warn:'20:00灯光秀人多，提前15分钟找位置。',notes:'明星手印+维港夜景，和蝴蝶酥博物馆顺路。',cash:false,book:false,opt:true},
 {id:'starferry',name:'天星小轮·中环↔尖沙咀',cat:'交通',lat:22.28704,lng:114.16119,address:'中环天星码头（7号码头）',hours:'约06:30–23:30（约5港币）',mtr:'中环站A出口步行',best:'傍晚海景',warn:'上下层票价不同；可八达通或现金；班次约6-10分钟一班。',notes:'过海风景线，省时省钱的维港游。',cash:false,book:false,opt:true},
 {id:'macaupier',name:'上环港澳码头（去澳门）',cat:'交通',lat:22.2877,lng:114.1525,address:'上环信德中心3/F',hours:'喷射飞航约06:30–23:30',mtr:'上环站D出口天桥直达',best:'9号下午出发',warn:'船票可提前App买更便宜；行李多可选港澳快线（太子/旺角上车）。',notes:'喷射飞航约1小时到澳门外港码头。',cash:false,book:false,opt:false},
@@ -824,49 +828,49 @@ const defaultLocations=[
 const DAYS=[
 {label:'D1 · 8/6周四',sub:'到达 + 蓝调维港',summary:'机场→酒店→黄大仙→金钟海滨（蓝调）→旺角晚餐→回酒店',items:[
  {t:'12:00',p:'抵达香港机场',loc:'airport',route:''},
- {t:'12:30–14:00',p:'机场→酒店',loc:'hotel',route:'城巴A21（约33港币，40-60分钟）→旺角段下车步行；赶时间可机场快线'},
+ {t:'12:30–14:00',p:'机场→酒店',loc:'hotel',route:'城巴A21（约33港币，40-60分钟）→「豉油街/登打士街」站下车→步行约10分钟到酒店（窝打老道75号）'},
  {t:'14:00–14:45',p:'到酒店寄存行李 · 旺角午餐',loc:'hotel',route:''},
- {t:'15:00–17:00',p:'黄大仙祠 · 求签/算命',loc:'wts',route:'旺角站→观塘线5站（约15分钟）→黄大仙站B2出口'},
- {t:'17:10',p:'前往金钟',loc:'harbour',route:'黄大仙→观塘线2站到九龙塘，转东铁线→金钟站（约25分钟）'},
+ {t:'15:00–17:00',p:'黄大仙祠 · 求签/算命',loc:'wts',route:'旺角站E2出口进站→观塘线5站（约15分钟）→黄大仙站B2出口直达黄大仙祠'},
+ {t:'17:10',p:'前往金钟',loc:'harbour',route:'黄大仙站B2→观塘线2站到九龙塘→转东铁线→金钟站（约25分钟）→A出口上扶手梯到海滨长廊'},
  {t:'18:00',p:'中西区海滨长廊 · 提前占机位',loc:'harbour',route:'金钟站A出口→旁扶手梯上到海滨长廊'},
  {t:'19:00–19:30',p:'🌆 蓝调时刻 · 微缩房子+电视机',loc:'harbour',route:'在同一段长廊，往中环码头方向找机位'},
- {t:'19:40',p:'回旺角',loc:'hotel',route:'东铁线 金钟→旺角东站（约12分钟）'},
+ {t:'19:40',p:'回旺角',loc:'hotel',route:'荃湾线 金钟→旺角站（约15分钟）→E2出口（九龙维景酒店方向）步行约8分钟'},
  {t:'20:00–21:00',p:'晚餐 · 旺角（近酒店）',loc:'',route:'旺角茶餐厅/小食，饭后步行5-10分钟回酒店'},
  {t:'21:10',p:'回酒店休息',loc:'hotel',route:'晚餐就在旺角，饭后步行5-10分钟回酒店'}
 ]},
 {label:'D2 · 8/7周五',sub:'拜仁球赛日 · 启德体育场20:00',summary:'深水埗→油麻地→尖沙咀→启德体育场（20:00开赛，19:15前到场）',items:[
- {t:'09:30',p:'深水埗 · 逛鸭寮街/南昌街',loc:'yashu',route:'旺角站→荃湾线1站到深水埗站'},
- {t:'11:00–12:15',p:'雅俗共想 · 张国荣海报楼梯',loc:'yashu',route:''},
- {t:'13:00',p:'午餐 · 辉记车仔面',loc:'fai',route:'深水埗→荃湾线3站到油麻地（约10分钟）'},
- {t:'15:00–16:00',p:'油麻地警署 · 外观+光影之旅',loc:'ymtps',route:'辉记步行约6分钟到广东道627号（展览场次以购票为准）'},
- {t:'16:15–17:45',p:'尖沙咀 · 锦绣唐朝→蝴蝶酥博物馆→九龙公园',loc:'jxtc',route:'油麻地→荃湾线2站到尖沙咀；iSQUARE→步行10分钟→蝴蝶酥→步行5分钟→九龙公园'},
- {t:'18:00–18:35',p:'晚餐 · Jollibee（球赛日提前吃）',loc:'jollibee',route:'九龙公园旁步行3分钟；18:35前吃完，宁早勿晚'},
- {t:'18:45',p:'出发去启德体育场',loc:'kaistak',route:'尖沙咀站→步行约5分钟到尖东站→屯马线 尖东→红磡→何文田→土瓜湾→宋皇台（4站约18分钟）'},
+ {t:'09:30',p:'深水埗 · 逛鸭寮街/南昌街',loc:'yashu',route:'旺角站E2→荃湾线1站到深水埗站→A1出口（南昌街/鸭寮街方向）'},
+ {t:'11:00–12:15',p:'雅俗共想 · 张国荣海报楼梯',loc:'yashu',route:'深水埗站A1出口，南昌街124号步行约8分钟'},
+ {t:'13:00',p:'午餐 · 辉记车仔面',loc:'fai',route:'深水埗站A1→荃湾线3站到油麻地→B2出口（文明里/鸦打街/庙街方向）→鸦打街33号'},
+ {t:'15:00–16:00',p:'油麻地警署 · 外观+光影之旅',loc:'ymtps',route:'辉记步行约6分钟（鸦打街→文明里→广东道627号）；展览场次以购票为准'},
+ {t:'16:15–17:45',p:'尖沙咀 · 锦绣唐朝→蝴蝶酥博物馆→九龙公园',loc:'jxtc',route:'油麻地站B2→荃湾线2站到尖沙咀→H/R出口直达国际广场iSQUARE；→步行10分钟→蝴蝶酥→步行5分钟→九龙公园'},
+ {t:'18:00–18:35',p:'晚餐 · Jollibee（球赛日提前吃）',loc:'jollibee',route:'九龙公园旁步行3分钟到金马伦道49号；18:35前吃完，宁早勿晚'},
+ {t:'18:45',p:'出发去启德体育场',loc:'kaistak',route:'金马伦道→步行5分钟到尖沙咀站→地下通道转尖东站（屯马线）→尖东→红磡→何文田→土瓜湾→宋皇台（4站约18分钟）'},
  {t:'19:15',p:'到达启德体育场 · 安检进场',loc:'kaistak',route:'宋皇台站D出口（或启德站D口）→启德体育大道步行约10分钟到主场馆；距开赛45分钟，从容入场不迟到'},
  {t:'20:00',p:'⚽ 拜仁慕尼黑球赛 · 启德体育场',loc:'kaistak',route:'20:00开球；场内禁带水和长柄伞，赛后可买官方商品'},
- {t:'赛后',p:'回酒店',loc:'hotel',route:'宋皇台→屯马线2站到何文田→转观塘线2站到旺角→步行回酒店（约30分钟，赛后港铁有加班车）'}
+ {t:'赛后',p:'回酒店',loc:'hotel',route:'宋皇台站→屯马线2站到何文田→转观塘线2站到旺角→E2出口步行约8分钟回酒店（约30分钟，赛后港铁有加班车）'}
 ]},
 {label:'D3 · 8/8周六',sub:'港岛日 + 跑马地',summary:'北角→铜锣湾→跑马地马场→中环海滨+天星小轮→旺角',items:[
- {t:'09:00',p:'前往北角',loc:'jke',route:'旺角→荃湾线到金钟转港岛线→北角（约35分钟）'},
+ {t:'09:00',p:'前往北角',loc:'jke',route:'旺角站E2→荃湾线到金钟转港岛线→北角站→B2出口（七姊妹道方向）步行约6分钟（约40分钟）'},
  {t:'10:00–10:45',p:'健康东街 · 海景街拍',loc:'jke',route:''},
- {t:'11:00',p:'前往铜锣湾',loc:'danish',route:'港岛线 北角→铜锣湾（3站）'},
- {t:'11:20',p:'丹麦饼店 · 买蛋挞/丹麦酥',loc:'danish',route:'铜锣湾站F出口步行6分钟（只收现金）'},
+ {t:'11:00',p:'前往铜锣湾',loc:'danish',route:'北角站B2→港岛线3站到铜锣湾→A出口（时代广场/礼顿道方向）'},
+ {t:'11:20',p:'丹麦饼店 · 买蛋挞/丹麦酥',loc:'danish',route:'铜锣湾站A出口步行约7分钟到礼顿道（只收现金）'},
  {t:'12:00–13:00',p:'午餐 · 铜锣湾',loc:'',route:'备选：荣记粉面、文辉墨鱼丸'},
- {t:'13:10',p:'前往跑马地',loc:'hkjc',route:'铜锣湾站A出口沿黄泥涌道步行约15分钟，或电车/巴士'},
+ {t:'13:10',p:'前往跑马地',loc:'hkjc',route:'铜锣湾站A出口（时代广场）→沿黄泥涌道步行约15分钟到跑马地马场，或电车/巴士'},
  {t:'13:30–15:00',p:'香港赛马会 · 跑马地马场 + 赛马博物馆',loc:'hkjc',route:'博物馆免费（周二至周日10:00-17:00，周一休馆）；8月休季无赛事，看博物馆+马场景观'},
- {t:'15:15',p:'跑马地→中环海滨',loc:'starferry',route:'电车/巴士约25分钟到中环/金钟→海滨长廊→天星小轮（约5港币）→尖沙咀'},
- {t:'16:30',p:'尖沙咀→旺角',loc:'hotel',route:'荃湾线到旺角（约10分钟）'},
- {t:'17:00',p:'龙丰 · 药妆补货',loc:'longfung',route:'旺角站E2出口旁（西洋菜南街远景大厦）'},
- {t:'17:45',p:'朗豪坊 · Log-On（7/F）',loc:'logon',route:'步行约5分钟'},
+ {t:'15:15',p:'跑马地→中环海滨',loc:'starferry',route:'回铜锣湾站A出口→港岛线到中环站→A出口沿海滨走→天星小轮（约5港币）→尖沙咀'},
+ {t:'16:30',p:'尖沙咀→旺角',loc:'hotel',route:'尖沙咀站→荃湾线到旺角（约10分钟）→E2出口步行约8分钟到酒店'},
+ {t:'17:00',p:'龙丰 · 药妆补货',loc:'longfung',route:'旺角站E2出口旁（西洋菜南街远景大厦）步行约3分钟'},
+ {t:'17:45',p:'朗豪坊 · Log-On（7/F）',loc:'logon',route:'沿西洋菜南街→亚皆老街步行约5分钟；或旺角站C3出口直达朗豪坊'},
  {t:'19:00–20:00',p:'晚餐 · 旺角',loc:'',route:'备选：女人街小食、煲仔饭、油渣面'},
  {t:'20:30',p:'回酒店',loc:'hotel',route:'晚餐就在旺角，饭后步行5-10分钟回酒店'}
 ]},
 {label:'D4 · 8/9周日',sub:'收尾 + 去澳门',summary:'退房→早茶→MOKO手信→港澳快线/船去澳门',items:[
  {t:'08:30',p:'退房 · 行李寄存前台',loc:'hotel',route:''},
  {t:'09:00–10:30',p:'旺角早茶',loc:'',route:'酒店附近茶楼'},
- {t:'11:00–12:00',p:'MOKO新世纪广场 · Petite Petite手信',loc:'petite',route:'旺角东站上盖，步行约8分钟'},
- {t:'12:00',p:'回酒店取行李',loc:'hotel',route:'步行约8分钟'},
- {t:'12:30',p:'出发去澳门',loc:'macaupier',route:'方案A 港澳快线：太子/旺角上车经港珠澳大桥（约90-120分钟，行李方便）；方案B 喷射飞航：旺角→上环港澳码头（约1小时）'},
+ {t:'11:00–12:00',p:'MOKO新世纪广场 · Petite Petite手信',loc:'petite',route:'旺角东站A出口直达新世纪广场MOKO（约8分钟）'},
+ {t:'12:00',p:'回酒店取行李',loc:'hotel',route:'MOKO→旺角东站A出口→步行约8分钟回酒店'},
+ {t:'12:30',p:'出发去澳门',loc:'macaupier',route:'方案A 港澳快线：太子/旺角上车经港珠澳大桥（约90-120分钟，行李方便）；方案B 喷射飞航：旺角→上环站D出口→信德中心港澳码头（约1小时）'},
  {t:'15:00–16:00',p:'抵达澳门半岛 · 入住',loc:'',route:'澳门晚餐：葡国菜/水蟹粥'}
 ]}
 ];
@@ -907,17 +911,21 @@ function renderDay(){
   d.items.forEach(it=>{
     const l=it.loc?byId(it.loc):null;
     let r=it.route||'';
-    if(l&&prev&&prev.id!==l.id&&!r){
+    const isTrans=l&&prev&&prev.id!==l.id;
+    if(isTrans&&!r){
       const dkm=distKm(prev,l);
       r=dkm<1.5?('步行约'+Math.round(dkm/4.5*60)+'分钟'):('港铁/巴士前往（预估'+(dkm<5?'5-12':'8-18')+'港币）');
     }
-    if(l)prev=l;
+    if(isTrans){
+      h+='<div class="tl-bridge"><div class="tl-route"><div class="ft">'+esc(prev.name)+'<span class="arr">→</span>'+esc(l.name)+'</div>'+esc(r)+'</div></div>';
+    }
     h+='<div class="tl-item"><div class="tl-time">'+esc(it.t)+'</div>'+
        '<div class="tl-body"'+(l?' onclick="openLoc(\''+l.id+'\')"':'')+'>'+
        '<div class="tt">'+esc(it.p)+'</div>'+
        (l?'<div class="loc">📍 '+esc(l.name)+'</div>':'')+
        '</div></div>';
-    if(r)h+='<div class="tl-route">'+esc(r)+'</div>';
+    if(!isTrans&&r)h+='<div class="tl-note">'+esc(r)+'</div>';
+    if(l)prev=l;
   });
   h+='</div>';
   document.getElementById('dayBody').innerHTML=h;
