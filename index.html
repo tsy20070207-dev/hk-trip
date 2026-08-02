@@ -702,11 +702,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
   .tl-body .tt{font-size:14px;font-weight:600}
   .tl-body .loc{display:inline-block;margin-top:3px;background:#f3f4f6;border-radius:6px;padding:1px 7px;font-size:12px;color:#374151}
   .tl-body .loc b{color:var(--brand)}
-  .tl-bridge{position:relative;padding:4px 0 4px 98px}
-  .tl-bridge::before{content:'';position:absolute;left:43px;top:0;bottom:0;width:2px;background:#d1d5db}
-  .tl-route{background:#f9fafb;border:1px dashed #cbd5e1;border-left:3px solid var(--brand);border-radius:8px;padding:7px 10px;font-size:12px;color:#374151;line-height:1.65;margin:2px 0}
-  .tl-route .ft{font-weight:700;color:var(--brand);margin-bottom:2px;font-size:12px}
-  .tl-route .ft .arr{color:#9ca3af;margin:0 5px;font-weight:400}
+  .tl-route{font-size:11px;color:var(--muted);padding:2px 0 4px 98px;line-height:1.5}
+  .tl-route::before{content:'↓ ';color:#9ca3af}
   .tl-note{font-size:11px;color:var(--muted);padding:3px 0 3px 98px}
   .loc-line{display:flex;gap:10px;align-items:center;padding:9px 4px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px}
   .loc-line:hover{background:#f9fafb}
@@ -838,7 +835,8 @@ const DAYS=[
  {t:'20:00–21:00',p:'晚餐 · 旺角（近酒店）',loc:'',route:'旺角茶餐厅/小食，饭后步行5-10分钟回酒店'},
  {t:'21:10',p:'回酒店休息',loc:'hotel',route:'晚餐就在旺角，饭后步行5-10分钟回酒店'}
 ]},
-{label:'D2 · 8/7周五',sub:'拜仁球赛日 · 启德体育场20:00',summary:'深水埗→油麻地→尖沙咀→启德体育场（20:00开赛，19:15前到场）',items:[
+{label:'D2 · 8/7周五',sub:'拜仁球赛日 · 启德体育场20:00',summary:'酒店→深水埗→油麻地→尖沙咀→启德体育场（20:00开赛，19:15前到场）',items:[
+ {t:'09:15',p:'从酒店出发',loc:'hotel',route:''},
  {t:'09:30',p:'深水埗 · 逛鸭寮街/南昌街',loc:'yashu',route:'旺角站E2→荃湾线1站到深水埗站→A1出口（南昌街/鸭寮街方向）'},
  {t:'11:00–12:15',p:'雅俗共想 · 张国荣海报楼梯',loc:'yashu',route:'深水埗站A1出口，南昌街124号步行约8分钟'},
  {t:'13:00',p:'午餐 · 辉记车仔面',loc:'fai',route:'深水埗站A1→荃湾线3站到油麻地→B2出口（文明里/鸦打街/庙街方向）→鸦打街33号'},
@@ -850,7 +848,8 @@ const DAYS=[
  {t:'20:00',p:'⚽ 拜仁慕尼黑球赛 · 启德体育场',loc:'kaistak',route:'20:00开球；场内禁带水和长柄伞，赛后可买官方商品'},
  {t:'赛后',p:'回酒店',loc:'hotel',route:'宋皇台站→屯马线2站到何文田→转观塘线2站到旺角→E2出口步行约8分钟回酒店（约30分钟，赛后港铁有加班车）'}
 ]},
-{label:'D3 · 8/8周六',sub:'港岛日 + 跑马地',summary:'北角→铜锣湾→跑马地马场→中环海滨+天星小轮→旺角',items:[
+{label:'D3 · 8/8周六',sub:'港岛日 + 跑马地',summary:'酒店→北角→铜锣湾→跑马地马场→中环海滨+天星小轮→旺角',items:[
+ {t:'08:45',p:'从酒店出发',loc:'hotel',route:''},
  {t:'09:00',p:'前往北角',loc:'jke',route:'旺角站E2→荃湾线到金钟转港岛线→北角站→B2出口（七姊妹道方向）步行约6分钟（约40分钟）'},
  {t:'10:00–10:45',p:'健康东街 · 海景街拍',loc:'jke',route:''},
  {t:'11:00',p:'前往铜锣湾',loc:'danish',route:'北角站B2→港岛线3站到铜锣湾→A出口（时代广场/礼顿道方向）'},
@@ -917,7 +916,7 @@ function renderDay(){
       r=dkm<1.5?('步行约'+Math.round(dkm/4.5*60)+'分钟'):('港铁/巴士前往（预估'+(dkm<5?'5-12':'8-18')+'港币）');
     }
     if(isTrans){
-      h+='<div class="tl-bridge"><div class="tl-route"><div class="ft">'+esc(prev.name)+'<span class="arr">→</span>'+esc(l.name)+'</div>'+esc(r)+'</div></div>';
+      h+='<div class="tl-route">'+esc(r)+'</div>';
     }
     h+='<div class="tl-item"><div class="tl-time">'+esc(it.t)+'</div>'+
        '<div class="tl-body"'+(l?' onclick="openLoc(\''+l.id+'\')"':'')+'>'+
